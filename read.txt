@@ -1,0 +1,45 @@
+1. Duyarlılık (Recall): 0.6117 (~%61)
+Sorduğu Soru: "Gerçekten RİSKLİ olan müşterilerin yüzde kaçını doğru tespit edebildik?"
+
+Bizim Senaryoda: Gerçekte var olan 80 riskli müşteriden bizim "Kredi Uzmanımız" (modelimiz) 49 tanesini başarıyla yakalayıp "Bu kişiye kredi vermeyelim, riskli" dedi. (80 * 0.61 = 48.8, yaklaşık 49 kişi).
+
+Anlamı: Bu, banka için en önemli metriklerden biridir. Çünkü potansiyel zararı, yani batacak krediyi önleme başarımızı gösterir. Her 10 riskli müşteriden 6'sını öngörebiliyoruz. Bu gayet iyi bir başlangıç. Geri kalan 31 riskli müşteri ise maalesef gözümüzden kaçtı ve onlara "risksiz" dedik (Bunlar "Yanlış Negatif" yani en maliyetli hatadır).
+
+2. Kesinlik (Precision): 0.1720 (~%17)
+Sorduğu Soru: "Biz 'Bu müşteri RİSKLİ' dediğimizde, bu tahminlerimizin yüzde kaçında haklı çıktık?"
+
+Bizim Senaryoda: "Kredi Uzmanımız" gün sonunda raporunu getirdi ve dedi ki: "Ben bugün toplam 285 kişiyi 'riskli' olarak işaretledim." Ancak bu 285 kişiyi kontrol ettiğimizde, sadece 49 tanesinin gerçekten riskli olduğunu görüyoruz (285 * 0.17 = 48.45, yaklaşık 49 kişi). Geri kalan 236 kişi ise aslında borcunu ödeyebilecek iyi müşterilerdi ama uzmanımız biraz fazla evhamlı davranıp onları da riskli sandı.
+
+Anlamı: Bu metrik, "ne kadar az hata ile iyi müşteriyi kaçırdığımızı" gösterir. Düşük olması, modelimizin biraz "paranoyak" davrandığını ve riskli olabilecek kimseyi kaçırmamak için bazı iyi müşterileri de feda ettiğini gösteriyor. Bu, kaybedilen iş fırsatı anlamına gelir.
+
+3. Doğruluk (Accuracy): 0.7309 (~%73)
+Sorduğu Soru: "Tüm kararlarımızın (hem riskli hem de risksiz tahminlerinin) toplamda yüzde kaçı doğruydu?"
+
+Bizim Senaryoda: Uzmanımız toplam 1000 başvuru inceledi. Bu 1000 kararın 731 tanesi doğruydu. (Yani risklilere "riskli", risksizlere "risksiz" dedi).
+
+Neden Tek Başına Güvenilmez? Bu metrik kulağa hoş gelse de bizim projemizde yanıltıcıdır. Neden? Çünkü uzmanımız hiçbir şey yapmayıp herkese "risksiz" deseydi bile, 1000 müşterinin 920'si zaten risksiz olduğu için %92'lik bir doğruluk oranına sahip olacaktı. Bu yüzden, bizim gibi dengesiz veri setlerinde Accuracy yerine Recall ve Precision'a odaklanmak çok daha anlamlıdır.
+
+4. ROC AUC Skoru: 0.7448 (~%74)
+Sorduğu Soru: "Modelimizin, riskli bir müşteri ile risksiz bir müşteriyi birbirinden ayırt etme yeteneği genel olarak ne kadar iyi?"
+
+Bizim Senaryoda: Masanın üzerine biri gerçekten riskli, diğeri gerçekten risksiz olan iki başvuru koysak ve uzmanımızdan "Hangisi daha riskli duruyor?" diye sorsak, uzmanımızın %74 ihtimalle doğru olanı (yani riskli olanı) işaretleyeceğini söyler.
+
+Anlamı: Bu skor, modelin genel "ayırt etme gücünü" ölçer. 0.50 olması yazı-tura atmakla aynı anlama gelirdi. 1.0 ise mükemmel ayırt etme gücü demektir. 0.74 skoru, modelimizin rastgele bir tahminden çok daha iyi olduğunu ve risk profillerini ayırt etme konusunda "iyi" bir iş çıkardığını gösterir.
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+En Önemli Başarımız: Yüksek Duyarlılık (Recall)
+
+Recall: 0.6860 (~%69). Bu, bizim için en önemli başarıdır. Anlamı şu: Piyasada gerçekten riskli olan her 100 müşteriden 69'unu modelimiz başarıyla tespit edebiliyor. Bu, bankanın potansiyel batık kredi miktarını ciddi oranda azaltır. scale_pos_weight parametresini kullanarak modelimizi riskli müşterileri kaçırmamaya zorlamamızın ne kadar doğru bir karar olduğunu bu skorla görüyoruz.
+
+Geliştirilmesi Gereken Yönümüz: Düşük Kesinlik (Precision)
+
+Precision: 0.1477 (~%15). Bu skorun düşük olması, madalyonun diğer yüzünü gösteriyor. Anlamı şu: Modelimiz "Bu müşteri riskli" dediğinde, bu tahminlerinin sadece %15'inde haklı çıkıyor. Diğer %85'inde ise aslında risksiz olan iyi müşterileri "riskli" olarak etiketliyor. Karmaşıklık matrisindeki 15,281 rakamı, bu "Yanlış Pozitif" durumları temsil ediyor.
+
+Precision-Recall Dengesi ve Genel Skor
+
+Bu durum, "Precision-Recall Trade-off" olarak bilinen çok tipik bir dengedir. Genellikle birini artırmaya çalıştığınızda diğeri düşer. Biz, banka için en maliyetli olan "riskli müşteriyi kaçırma" (Yanlış Negatif) hatasını azaltmaya odaklandık ve Recall'u yükselttik. Bunun bedeli olarak da Precision'ımız düştü. Gerçek hayatta, bir banka bu dengeyi kendi risk iştahına göre ayarlar.
+
+ROC AUC Skoru: 0.7513. Bu skor, modelimizin genel olarak riskli ve risksiz müşterileri ayırt etme yeteneğinin "iyi" seviyede olduğunu gösterir. 0.5 (rastgele tahmin) ile 1.0 (mükemmel tahmin) arasında 0.75, bu zorlu problem için gayet başarılı bir başlangıçtır.
+
