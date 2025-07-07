@@ -1,3 +1,4 @@
+NOT : https://www.kaggle.com/c/home-credit-default-risk/overview 'den önce verileri indirin.
 # Açıklanabilir Yapay Zeka (XAI) ile Kredi Skorlama Modeli
 
 Bu proje, finans sektöründeki "kara kutu" problemini çözmeyi amaçlayan uçtan uca bir makine öğrenmesi projesidir. Yüksek performanslı bir XGBoost kredi riski modeli eğitilmiş ve SHAP kütüphanesi kullanılarak modelin kararlarının hem genel hem de bireysel bazda nasıl alındığı şeffaf bir şekilde açıklanmıştır.
